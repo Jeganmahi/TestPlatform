@@ -134,39 +134,7 @@ export default function App() {
     </MDBox>
   );
 
-  return direction === "rtl" ? (
-    <SessionProvider>
-      <CacheProvider value={rtlCache}>
-        <ThemeProvider theme={darkMode ? themeDarkRTL : themeRTL}>
-          <CssBaseline />
-          {layout === "dashboard" && (
-            <>
-              <Sidenav
-                color={sidenavColor}
-                brand={(transparentSidenav && !darkMode) || whiteSidenav ? brandDark : brandWhite}
-                brandName="Material Dashboard 2"
-                routes={routes}
-                onMouseEnter={handleOnMouseEnter}
-                onMouseLeave={handleOnMouseLeave}
-              />
-              <Configurator />
-              {configsButton}
-            </>
-          )}
-          {layout === "vr" && <Configurator />}
-          <Routes>
-            {getRoutes(routes)}
-            <Route path="*" element={<Navigate to="/sign-in" />} />
-            <Route path='/student' element={<Navigate to="/student"/>}/>
-            <Route path='/Quizzes' element={<Navigate to="/Quizzes"/>}/>
-            <Route path='/TestCreate' element={<Navigate to="/TestCreate"/>}/>
-            <Route path="/DetailedResults" element={<Navigate to="/DetailedResults" />} />
-            <Route path="/results" element={<Navigate to="/results" />} />
-          </Routes>
-        </ThemeProvider>
-      </CacheProvider>
-    </SessionProvider>
-  ) : (
+  return  (
     <SessionProvider>
       <ThemeProvider theme={darkMode ? themeDark : theme}>
         <CssBaseline />

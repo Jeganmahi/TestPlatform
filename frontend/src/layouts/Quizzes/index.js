@@ -1,17 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
 
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 import { useEffect } from 'react';
 // @mui material components
 import Box from '@mui/material/Box';
@@ -21,16 +8,10 @@ import Card from "@mui/material/Card";
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import * as React from 'react';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
 // Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import Footer from "examples/Footer";
-import DataTable from "examples/Tables/DataTable";
 import MDButton from "components/MDButton";
 import Stack from '@mui/material/Stack';
 import { Tabs, Tab, Divider } from '@mui/material';
@@ -41,29 +22,15 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { useSession } from " SessionContext";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from '@mui/material';
+import QuizTable from './data/MCQList';
+import CodingTable from './data/CodingList';
 function Quizzes() {
-  const {name,pass}=useSession();
+  const { name, pass } = useSession();
   const [formKey, setFormKey] = useState(0)
-  const [open, setOpen] = React.useState(false);
-  const [CodeModal, setCodeModal] = React.useState(false);
-  const handleClose = () => setOpen(false);
-  const handleCodingClose = () => setCodeModal(false);
   const [tabIndex, setTabIndex] = useState(0);
-
   const handleChangeTab = (event, newValue) => {
     setTabIndex(newValue);
   };
-
-
   const [questionBankData, setquestionBankData] = useState([]);
   const [codingQuestionBankData, setcodingQuestionBankData] = useState([]);
   const [codingFormData, setCodingFormData] = useState({
@@ -78,12 +45,11 @@ function Quizzes() {
     bankDifficulty: "",
     questionFile: null
   });
-  const [formattedData, setFormattedData] = useState(null);
   const [codeFormattedData, setCodeFormattedData] = useState(null);
   useEffect(() => {
 
     console.log(codeFormattedData);
-  }, [formattedData, codeFormattedData])
+  }, [codeFormattedData])
   const handleCreateButton = async () => {
     console.log(formData.questionFile);
     try {
@@ -96,93 +62,15 @@ function Quizzes() {
       });
       const result = await response.json();
       //toast("question bank created")
+      setFormData({})
+
       alert("success");
-      fetchData();
     }
     catch (error) {
       console.log(error);
     }
   }
 
-  const handleCodingOpen = () => {
-    setCodeModal(true);
-    console.log(CodeModal);
-  }
-  const cfd=(data)=>{
-    setCodeFormattedData(data);
-    
-    setCodeModal(true)
-  }
-  const handleViewCodingQuestions = async (ID) => {
-
-    try {
-      const response = await fetch(`http://localhost:5001/Codequestion/${ID}`);
-      const jsondata = await response.json();
-      
-      cfd(jsondata);
-      console.log(codeFormattedData);
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  }
-  const handleCodingBankDelete = async (ID) => {
-    console.log(ID);
-    try {
-      const response = await fetch(`http://localhost:5001/CodequestionDelete/${ID}`);
-      const jsondata = await response.json();
-      codingFetchData();
-
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  }
-  const handleDelete = async (ID) => {
-    console.log(ID);
-    try {
-      const response = await fetch(`http://localhost:5001/MCQDelete/${ID}`);
-      const jsondata = await response.json();
-      fetchData();
-
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  }
-  const handleViewQuestions = async (ID) => {
-    try {
-      const response = await fetch(`http://localhost:5001/question/${ID}`);
-      const jsondata = await response.json();
-      console.log(jsondata)
-      setOpen(true)
-      setFormattedData(jsondata);
-
-
-    } catch (error) {
-      console.error('Error fetching questions:', error);
-    }
-  }
-  const columns = [
-    { Header: "Bank Name", accessor: "Name", width: "45%", align: "left" },
-    { Header: "Type", accessor: "Type", align: "left" },
-    { Header: "Difficulty ", accessor: "Difficulty", align: "center" },
-    { Header: "Created On ", accessor: "Created", align: "center" },
-    { Header: "action", accessor: "Action", align: "center" },
-  ]
-  const rows = questionBankData.map(questionBank => ({
-    Name: questionBank.BankName,
-    Difficulty: questionBank.Difficulty, // Add logic to calculate difficulty if needed
-    Type: questionBank.BankType,
-    Created: questionBank.Date, // Add logic to calculate creation date if needed
-    Action: (
-      <MDBox>
-        <MDButton color="info" onClick={() => handleViewQuestions(questionBank.BankID)}>
-          View
-        </MDButton>
-        <MDButton color="error"  onClick={() => handleDelete(questionBank.BankID)}>
-          Delete
-        </MDButton>
-      </MDBox>
-    ),
-  }));
   const handleCodingCreateButton = async () => {
     console.log(codingFormData);
     try {
@@ -202,29 +90,8 @@ function Quizzes() {
       console.log(error);
     }
   }
-  const CodeColumns = [
-    { Header: "Code Bank Name", accessor: "cname", width: "45%", align: "left" },
-    { Header: "Type", accessor: "Type", align: "left" },
-    { Header: "Difficulty ", accessor: "Difficulty", align: "center" },
-    { Header: "Created On ", accessor: "Created", align: "center" },
-    { Header: "action", accessor: "Action", align: "center" },
-  ]
-  const CodeRows = codingQuestionBankData.map(questionBank => ({
-    cname: questionBank.BankName,
-    Difficulty: questionBank.BankDifficulty, // Add logic to calculate difficulty if needed
-    Type: questionBank.BankType,
-    Created: questionBank.CreatedDate, // Add logic to calculate creation date if needed
-    Action: (
-      <MDBox>
-        <MDButton color="info" onClick={() => handleViewCodingQuestions(questionBank.CodingQuestionBankID)}>
-          View
-        </MDButton>
-        <MDButton color="error" onClick={() => handleCodingBankDelete(questionBank.CodingQuestionBankID)}>
-          Delete
-        </MDButton>
-      </MDBox>
-    ),
-  }));
+
+
   const fetchData = async () => {
     try {
       const response = await fetch(`http://localhost:5001/questionBankData/${name}`);
@@ -246,11 +113,11 @@ function Quizzes() {
   useEffect(() => {
     fetchData();
     codingFetchData();
-    
-  }, [formData]);
+
+  }, [formData, questionBankData]);
   return (
     <DashboardLayout>
-      {console.log(name,pass)}
+      {console.log(name, pass)}
       <MDBox pt={6} pb={3}>
         <Grid container spacing={6}>
           <Grid item xs={12}>
@@ -271,116 +138,10 @@ function Quizzes() {
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
-                <DataTable
-                  table={{ columns, rows }}
-                  isSorted={true}
-                  entriesPerPage={true}
-                  showTotalEntries={true}
-                  noEndBorder
-                />
+                <QuizTable questionBankData={questionBankData} />
               </MDBox>
             </Card>
           </Grid>
-          <Dialog maxWidth="lg" open={open} justifyContent="center" onClose={handleClose}>
-            <DialogTitle>Questions</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-              <table>
-      <thead>
-        <tr>
-          
-          <th>Question Text</th>
-          <th>Correct Option</th>
-          <th>Wrong option1</th>
-          <th>Wrong option2</th>
-          <th>Wrong option3</th>
-        </tr>
-      </thead>
-      <tbody>
-              {formattedData&&formattedData.map(question => (
-            <TableRow key={question.QuestionID}>
-              <TableCell>{question.QuestionText}</TableCell>
-              <TableCell>{question.Coption}</TableCell>
-              <TableCell>{question.Woption1}</TableCell>
-              <TableCell>{question.Woption2}</TableCell>
-              <TableCell>{question.Woption3}</TableCell>
-              {/* Add more TableCell components for additional question details */}
-            </TableRow>
-          ))}
-          </tbody>
-          </table>
-                
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-              <MDButton onClick={handleClose} color="primary">
-                Cancel
-              </MDButton>
-              <MDButton onClick={handleClose} color="primary" autoFocus>
-                Save
-              </MDButton>
-            </DialogActions>
-          </Dialog>
-          <Dialog maxWidth="lg" open={CodeModal}  sx={{width:'auto'}}justifyContent="center" onClose={handleCodingClose}>
-            <DialogTitle>Question List</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                <Box component="form" sx={{ width: 'auto', height: 'auto', textAlign: 'center' }} noValidate autoComplete="off">
-                </Box>
-                
-              </DialogContentText>
-              <Box component="form" sx={{ width: 'auto', height: 'auto', textAlign: 'center' }} noValidate autoComplete="off">
-              
-     <table>
-      <thead>
-        <tr>
-          <th>Question ID</th>
-          <th>Question Text</th>
-          <th>Sample Input</th>
-          <th>Sample Output</th>
-          <th>Hidden InputTest CaseI</th>
-          <th>Hidden OutputTest CaseI</th>
-          <th>Hidden Input TestCaseII</th>
-          <th>Hidden Output TestCaseII</th>
-          <th>Hidden Input TestCaseIII</th>
-          <th>Hidden Output TestCaseIII</th>
-          <th>Constraints</th>
-          <th>Time Limit</th>
-          <th>Storage Limit</th>
-        </tr>
-      </thead>
-      <tbody>
-      {codeFormattedData&&codeFormattedData.map(question => (
-            <TableRow key={question.QuestionID}>
-              <TableCell>{question.QuestionID}</TableCell>
-              <TableCell>{question.QuestionText}</TableCell>
-              <TableCell>{question.SampleInput}</TableCell>
-              <TableCell>{question.SampleOutput}</TableCell>
-              <TableCell>{question.HiddenInputTestCaseI}</TableCell>
-              <TableCell>{question.HiddenOutputTestCaseI}</TableCell>
-              <TableCell>{question.HiddenInputTestCaseII}</TableCell>
-              <TableCell>{question.HiddenInputTestCaseII}</TableCell>
-              <TableCell>{question.HiddenInputTestCaseIII}</TableCell>
-              <TableCell>{question.HiddenOutputTestCaseIII}</TableCell>
-              <TableCell>{question.Constraints}</TableCell>
-              <TableCell>{question.TimeLimit}</TableCell>
-              <TableCell>{question.StorageLimit}</TableCell>
-              {/* Add more TableCell components for additional question details */}
-            </TableRow>
-          ))}
-      </tbody>
-     </table>
-                </Box>
-            </DialogContent>
-            <DialogActions>
-              <MDButton onClick={handleCodingClose} color="primary">
-                Cancel
-              </MDButton>
-              <MDButton onClick={handleClose} color="primary" autoFocus>
-                Save
-              </MDButton>
-            </DialogActions>
-          </Dialog>
           <Grid item xs={12}>
             <Card>
               <MDBox
@@ -398,13 +159,7 @@ function Quizzes() {
                 </MDTypography>
               </MDBox>
               <MDBox pt={3}>
-                <DataTable
-                  table={{ columns: CodeColumns, rows: CodeRows }}
-                  isSorted={true}
-                  entriesPerPage={true}
-                  showTotalEntries={true}
-                  noEndBorder
-                />
+                <CodingTable codingQuestionBankData={codingQuestionBankData} />
               </MDBox>
             </Card>
           </Grid>

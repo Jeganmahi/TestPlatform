@@ -68,42 +68,35 @@ export default function QuizTable({ questionBankData }) {
           <DialogTitle>Questions</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              <table>
-                <thead>
-                  <tr>
-
-                    <th>Question Text</th>
-                    <th>Correct Option</th>
-                    <th>Wrong option1</th>
-                    <th>Wrong option2</th>
-                    <th>Wrong option3</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formattedData && formattedData.map(question => (
-                    <TableRow key={question.QuestionID}>
-                      <TableCell>{question.QuestionText}</TableCell>
-                      <TableCell>{question.Coption}</TableCell>
-                      <TableCell>{question.Woption1}</TableCell>
-                      <TableCell>{question.Woption2}</TableCell>
-                      <TableCell>{question.Woption3}</TableCell>
-                      {/* Add more TableCell components for additional question details */}
-                    </TableRow>
-                  ))}
-                </tbody>
-              </table>
-
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <thead>
+                    <tr>
+                      <th style={{ border: "1px solid #ddd", padding: "8px" }}>Question Text</th>
+                      <th style={{ border: "1px solid #ddd", padding: "8px" }}>Correct Option</th>
+                      <th style={{ border: "1px solid #ddd", padding: "8px" }}>Wrong Option 1</th>
+                      <th style={{ border: "1px solid #ddd", padding: "8px" }}>Wrong Option 2</th>
+                      <th style={{ border: "1px solid #ddd", padding: "8px" }}>Wrong Option 3</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {formattedData && formattedData.map((question, index) => (
+                      <tr key={index} style={{ backgroundColor: index % 2 === 0 ? "#f2f2f2" : "transparent" }}>
+                        <td style={{ border: "1px solid #ddd", padding: "8px" }}>{question.QuestionText}</td>
+                        <td style={{ border: "1px solid #ddd", padding: "8px" }}>{question.Coption}</td>
+                        <td style={{ border: "1px solid #ddd", padding: "8px" }}>{question.Woption1}</td>
+                        <td style={{ border: "1px solid #ddd", padding: "8px" }}>{question.Woption2}</td>
+                        <td style={{ border: "1px solid #ddd", padding: "8px" }}>{question.Woption3}</td>
+                        {/* Add more columns for additional question details */}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </DialogContentText>
           </DialogContent>
-          <DialogActions>
-            <MDButton onClick={handleClose} color="primary">
-              Cancel
-            </MDButton>
-            <MDButton onClick={handleClose} color="primary" autoFocus>
-              Save
-            </MDButton>
-          </DialogActions>
         </Dialog>
+
         <MDButton color="info" onClick={() => handleViewQuestions(questionBank.BankID)}>
           View
         </MDButton>

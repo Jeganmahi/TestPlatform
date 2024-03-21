@@ -15,6 +15,8 @@ const db = mysql.createConnection({
   password: '',
   database: 'Proctor_db'
 });
+
+
 // table data
 app.get('/tableData/:staff_mail', async (req, res) => {
   try {
@@ -48,6 +50,72 @@ app.put('/studentInsert', (req, res) => {
     return res.json(results)
   });
 })
+// code manual
+app.post('/codemanual', (req, res) => {
+  const { formData, questions } = req.body;
+  console.log(req.body)
+
+  const codeBanksSqlQuery = 'INSERT INTO CodingQuestionBanks (BankName, BankType, BankDifficulty,CreatedDate,staff_mail) VALUES (?, ?, ?,NOW(),"jegan")';
+  const codeBanksValues = [formData.bankName, formData.bankType, formData.bankDifficulty];
+  db.query(codeBanksSqlQuery, codeBanksValues, (err, mcqBanksResults) => {
+    if (err) {
+      console.error('Error inserting into MCQ Banks table:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    // Extract the inserted MCQ Bank ID
+    const codeBankID = mcqBanksResults.insertId;
+
+    // Insert data into Question table for each question
+    const questionSqlQuery = 'INSERT INTO CodingQuestions (CodingQuestionBankID, QuestionText, SampleInput, SampleOutput, HiddenInputTestCaseI, HiddenOutputTestCaseI,HiddenInputTestCaseII,HiddenOutputTestCaseII,HiddenInputTestCaseIII,HiddenOutputTestCaseIII,Constraints,TimeLimit,StorageLimit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    questions.forEach(question => {
+      const questionValues = [codeBankID, question.questionText, question.SampleInput, question.SampleOutput, question.HiddenInputTestCaseI, question.HiddenOutputTestCaseI,question.HiddenInputTestCaseII,question.HiddenOutputTestCaseII,question.HiddenInputTestCaseIII,question.HiddenOutputTestCaseIII,question.Constraints,question.TimeLimit,question.StorageLimit];
+      db.query(questionSqlQuery, questionValues, (err, questionResults) => {
+        if (err) {
+          console.error('Error inserting into Question table:', err);
+          return res.status(500).json({ error: 'Database error' });
+        }
+      });
+    });
+
+    // Respond with a success message
+    res.status(200).json({ message: 'Data inserted successfully' });
+  });
+});
+
+// mcq manual
+app.post('/mcqmanual', (req, res) => {
+  const { formData, questions } = req.body;
+
+  // Insert data into MCQ Banks table
+  const mcqBanksSqlQuery = 'INSERT INTO MCQBanks (BankName, BankType, Difficulty,Date,staff_mail) VALUES (?, ?, ?,NOW(),"jegan")';
+  const mcqBanksValues = [formData.bankName, formData.bankType, formData.bankDifficulty];
+  db.query(mcqBanksSqlQuery, mcqBanksValues, (err, mcqBanksResults) => {
+    if (err) {
+      console.error('Error inserting into MCQ Banks table:', err);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    // Extract the inserted MCQ Bank ID
+    const mcqBankID = mcqBanksResults.insertId;
+
+    // Insert data into Question table for each question
+    const questionSqlQuery = 'INSERT INTO Questions (QuestionBankID, QuestionText, Coption, Woption1, Woption2, Woption3) VALUES (?, ?, ?, ?, ?, ?)';
+    questions.forEach(question => {
+      const questionValues = [mcqBankID, question.question, question.options[0], question.options[1], question.options[2], question.options[3]];
+      db.query(questionSqlQuery, questionValues, (err, questionResults) => {
+        if (err) {
+          console.error('Error inserting into Question table:', err);
+          return res.status(500).json({ error: 'Database error' });
+        }
+      });
+    });
+
+    // Respond with a success message
+    res.status(200).json({ message: 'Data inserted successfully' });
+  });
+});
+
 // test banks
 app.get('/testData/:staff_mail', (req, res) => {
   const sqlQuery = 'SELECT * FROM TestBanks WHERE staff_mail = ?';
@@ -238,7 +306,7 @@ app.get('/MCQDelete/:bankId', async (req, res) => {
     }
 
     // Delete associated options for MCQ questions of the specified question bank
-   
+
 
     // Delete associated MCQ questions
     await db.query('DELETE FROM Questions WHERE QuestionBankID = ?', [bankId]);
@@ -355,7 +423,7 @@ app.get('/codingData/:staff_mail', (req, res) => {
 //bank data fetch
 app.get('/questionBankData/:staff_mail', (req, res) => {
   const staff_mail = req.params.staff_mail;
-  
+
   const sqlQuerry = 'select * from MCQBanks where staff_mail=?'
   const values = [staff_mail];
   db.query(sqlQuerry, values, (err, results) => {
